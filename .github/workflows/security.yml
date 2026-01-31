@@ -2,35 +2,48 @@ name: DevSecOps Security Pipeline
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
 
 jobs:
   security-scan:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+      # Step 1: Checkout source code
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - uses: actions/setup-python@v4
-      with:
-        python-version: '3.10'
+      # Step 2: Setup Python
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
 
-    - name: Install Bandit
-      run: pip install bandit
+      # Step 3: Install Bandit (SAST)
+      - name: Install Bandit
+        run: pip install bandit
 
-    - name: Run Bandit
-      run: bandit -r . -ll
+      # Step 4: Run Bandit scan
+      - name: Run Bandit Scan
+        run: bandit -r . -ll
 
-    - name: Install Trivy
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y wget
-        wget https://github.com/aquasecurity/trivy/releases/latest/download/trivy_0.50.1_Linux-64bit.deb
-        sudo dpkg -i trivy_0.50.1_Linux-64bit.deb
+      # Step 5: Install Trivy
+      - name: Install Trivy
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget
+          wget https://github.com/aquasecurity/trivy/releases/latest/download/trivy_0.50.1_Linux-64bit.deb
+          sudo dpkg -i trivy_0.50.1_Linux-64bit.deb
 
-    - name: Build Docker Image
-      run: docker build -t insecure-app .
+      # Step 6: Build Docker image
+      - name: Build Docker Image
+        run: docker build -t insecure-app .
 
-    - name: Run Trivy
-      run: trivy image --exit-code 1 --severity HIGH,CRITICAL insecure-app
+      # Step 7: Scan Docker image with Trivy
+      - name: Run Trivy Image Scan
+        run: trivy image --exit-code 1 --severity HIGH,CRITICAL insecure-app
+
+
+    
   

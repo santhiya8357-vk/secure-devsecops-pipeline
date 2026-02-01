@@ -28,22 +28,19 @@ jobs:
       - name: Run Bandit Scan
         run: bandit -r . -ll
 
-      # Step 5: Install Trivy
-      - name: Install Trivy
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y wget
-          wget https://github.com/aquasecurity/trivy/releases/latest/download/trivy_0.50.1_Linux-64bit.deb
-          sudo dpkg -i trivy_0.50.1_Linux-64bit.deb
-
-      # Step 6: Build Docker image
+      # Step 5: Build Docker image
       - name: Build Docker Image
-        run: docker build -t insecure-app .
+        run: docker build -t secure-app .
 
-      # Step 7: Scan Docker image with Trivy
+      # Step 6: Scan Docker image with Trivy
       - name: Run Trivy Image Scan
-        run: trivy image --exit-code 1 --severity HIGH,CRITICAL insecure-app
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: secure-app
+          exit-code: 1
+          severity: HIGH,CRITICAL
 
+      
 
     
   

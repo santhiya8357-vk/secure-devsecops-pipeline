@@ -1,8 +1,8 @@
 import subprocess
-import pickle
+import json
 
 def run_command(cmd):
-    subprocess.Popen(cmd, shell=True)
+    subprocess.run(cmd, shell=False, check=True)
 
-password = "admin123"
-run_command("ls")
+def load_data(data):
+    return json.loads(data)
